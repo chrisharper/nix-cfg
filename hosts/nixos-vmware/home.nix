@@ -24,7 +24,6 @@
 
   programs.bash.enable = true;
   home.sessionVariables = {
-    EDITOR = "nvim";
   };
 
   programs.neovim = {
