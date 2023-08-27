@@ -74,4 +74,5 @@ osx/bootstrap0:
 
 #run build for 
 osx/build:
-	./result/sw/bin/darwin-rebuild switch --flake .#darwin-m1air
+ 	./result/sw/bin/darwin-rebuild switch --flake .#darwin-m1air
+        source ~/.zshrc
