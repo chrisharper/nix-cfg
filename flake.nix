@@ -45,7 +45,13 @@
              home-manager.useUserPackages = true;
              home-manager.useGlobalPkgs = true;
              home-manager.users.charper = {
-               imports = hm-modules;
+               imports = hm-modules
+               ++[
+                 ./home/packages.nix
+                 ./home/git.nix
+                 ./home/tmux.nix
+                 ./home/neovim.nix
+               ];
              };
 
           }
@@ -56,14 +62,14 @@
       darwin-m1air = mksystemConfig {
         system = "aarch64-darwin";
         modules = [./hosts/darwin-m1air];
-        hm-modules = [./hosts/darwin-m1air/home.nix];
+        hm-modules = [./home/darwin.nix];
       };
     };
     nixosConfigurations = {
       nixos-vmware = mksystemConfig {
         system = "aarch64-linux";
         modules = [./hosts/nixos-vmware];
-        hm-modules = [./hosts/nixos-vmware/home.nix];
+        hm-modules = [./home/nixos.nix];
       };
     };
   };

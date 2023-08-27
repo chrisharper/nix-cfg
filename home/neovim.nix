@@ -1,34 +1,8 @@
-{ config, pkgs, ssh-key,  ... }:
+{config,pkgs,...}:
 
 {
-  
-  # Home Manager needs a bit of information about you and the
-  # paths it should manage.
-  home.username = "charper";
-  home.homeDirectory = "/home/charper";
 
-  # This value determines the Home Manager release that your
-  # configuration is compatible with. This helps avoid breakage
-  # when a new Home Manager release introduces backwards
-  # incompatible changes.
-  #
-  # You can update Home Manager without changing this value. See
-  # the Home Manager release notes for a list of state version
-  # changes in each release.
-  home.stateVersion = "23.05";
-
-  # Let Home Manager install and manage itself.
-  programs.home-manager.enable = true;
-  home.packages = [
-    pkgs.ripgrep #nvim telescope
-    pkgs.nodePackages.bash-language-server #neovim bash LSP
-  ];
-
-  programs.bash.enable = true;
-  home.sessionVariables = {
-  };
-
-  programs.neovim = {
+    programs.neovim = {
     enable = true;
     defaultEditor = true;
     viAlias = true;
@@ -102,58 +76,5 @@
 
     '';
   };
-  
-  programs.tmux = { 
-	  enable = true;
-	  clock24 = true;
-	  keyMode = "vi";
-	  mouse = false;
-    terminal = "screen-256color";
-	  shortcut = "a";
-    extraConfig =''
-      
-      set-option -sa terminal-features ',xterm-kitty:RGB'
-      bind -r -N 'Select panel to right' h select-pane -L
-      bind -r -N 'Select panel to below' j select-pane -D
-      bind -r -N 'Select panel to above' k select-pane -U
-      bind -r -N 'Select panel to left'  l select-pane -R
 
-      unbind Up     
-      unbind Down   
-      unbind Left   
-      unbind Right  
-
-      bind -r -N 'Increase panel to left' 'C-h' resize-pane -L 5
-      bind -r -N 'Increase panel to below' 'C-j' resize-pane -D 5
-      bind -r -N 'Increase panel to above' 'C-k' resize-pane -U 5
-      bind -r -N 'Increase panel to right' 'C-l' resize-pane -R 5
-
-      unbind C-Up   
-      unbind C-Down 
-      unbind C-Left 
-      unbind C-Right
-
-
-      bind c new-window -c '#{pane_current_path}'
-      bind '"' split-window -c '#{pane_current_path}'
-      bind % split-window -h -c '#{pane_current_path}'
-	  '';
-  };
-
-  programs.git = {
-	  enable = true;
-	  userEmail = "charper+git@charper.co.uk";
-	  userName = "Chris Harper";
-	  extraConfig = {
-      user = {
-        signingkey = "key::${ssh-key}";
-      };
-      commit = {
-        gpgsign = true;
-      };
-      gpg = {
-        format = "ssh";
-      };
-	  };
-  };
 }

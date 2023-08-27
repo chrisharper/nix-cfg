@@ -1,4 +1,4 @@
-{ config, pkgs, pkgs-unstable, ssh-key, ... }:
+{ config, pkgs, ... }:
 
 {
 	home.stateVersion = "23.05";
@@ -20,28 +20,6 @@
 	programs.kitty = {
 		enable = true;
 		theme = "Gruvbox Material Dark Hard";
-	};
-
- 	programs.vim = {
-		enable = true;
-		defaultEditor = true;
-	};
-
-	programs.git = {
-		enable = true;
-		userEmail = "charper+git@charper.co.uk";
-		userName = "Chris Harper";
-		extraConfig = {
-			user = {
-				signingkey = "key::${ssh-key}";
-			};
-			commit = {
-				gpgsign = true;
-			};
-			gpg = {
-				format = "ssh";
-			};
-		};
 	};
 
 	programs.ssh = {
