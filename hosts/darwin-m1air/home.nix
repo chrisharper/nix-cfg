@@ -16,7 +16,10 @@
 	home.sessionVariables={
 		SSH_AUTH_SOCK = "/Users/charper/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh";
 	};
-
+	programs.kitty = {
+		enable = true;
+		theme = "Gruvbox Material Dark Hard";
+	};
 	programs.git = {
 		enable = true;
 		userEmail = "charper+git@charper.co.uk";
