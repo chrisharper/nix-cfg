@@ -31,6 +31,7 @@
       else nixpkgs.lib.nixosSystem
     ){
       inherit specialArgs;
+      inherit system;
       modules = 
         modules
         ++ [
