@@ -36,7 +36,7 @@
       };
     };
     nixosConfigurations = {
-      nixos-vmware-dev = nixpkgs.lib.nixosSystem {
+      nixos-vmware = nixpkgs.lib.nixosSystem {
       system = "aarch64-linux";
       specialArgs = { inherit ssh-key; };
         modules = [

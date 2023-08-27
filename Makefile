@@ -34,15 +34,15 @@ vm/bootstrap0:
 		mount /dev/disk/by-label/boot /mnt/boot; \
 		nixos-generate-config --root /mnt; \
 		sed --in-place '/system\.stateVersion = .*/a \
-			nix.package = pkgs.nixUnstable;\n \
-			nix.extraOptions = \"experimental-features = nix-command flakes\";\n \
-  			services.openssh.enable = true;\n \
-			services.openssh.settings.PasswordAuthentication = true;\n \
-			services.openssh.settings.PermitRootLogin = \"yes\";\n \
-			users.users.root.initialPassword = \"root\";\n \
+		nix.package = pkgs.nixUnstable;\n \
+		nix.extraOptions = \"experimental-features = nix-command flakes\";\n \
+		services.openssh.enable = true;\n \
+		services.openssh.settings.PasswordAuthentication = true;\n \
+		services.openssh.settings.PermitRootLogin = \"yes\";\n \
+		users.users.root.initialPassword = \"root\";\n \
 		' /mnt/etc/nixos/configuration.nix; \
 		nixos-install --no-root-passwd && reboot; \
-	"
+		"
 
 # after bootstrap0, run this to finalize. After this, do everything else
 # in the VM unless secrets change.
@@ -57,22 +57,22 @@ vm/bootstrap:
 vm/copy:
 	rsync -av -e 'ssh $(SSH_OPTIONS) -p$(NIXPORT)' \
 		--rsync-path="sudo rsync" \
-		$(MAKEFILE_DIR)/ $(NIXUSER)@$(NIXADDR):/nix-cfg
+ 		$(MAKEFILE_DIR)/ $(NIXUSER)@$(NIXADDR):/nix-cfg
 
 # run the nixos-rebuild switch command. This does NOT copy files so you
 # have to run vm/copy before.
 vm/switch:
 	ssh $(SSH_OPTIONS) -p$(NIXPORT) $(NIXUSER)@$(NIXADDR) " \
-		sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nix-shell -p git --run 'nixos-rebuild switch --flake \/nix-cfg\#nixos-vmware ' \
-	"
+	sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nix-shell -p git --run 'nixos-rebuild switch --flake \/nix-cfg\#nixos-vmware ' \
+									    "
 #Installs Homebrew(pulls in xcode-tools) + Nix and setups build env
 osx/bootstrap0:
-	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" 
 	curl -L https://nixos.org/nix/install | sh
-	nix build .#darwinConfigurations.darwin-m1air.system --extra-experimental-features nix-command --extra-experimental-features flakes
+	nix build .#darwinConfigurations.darwin-m1air.system --extra-experimental-features nix-command --extra-experimental-features flakes 
 	$(MAKE) osx/build
 
 #run build for 
 osx/build:
- 	./result/sw/bin/darwin-rebuild switch --flake .#darwin-m1air
-        source ~/.zshrc
+	./result/sw/bin/darwin-rebuild switch --flake .#darwin-m1air 
+	/bin/zsh -c 'source ~/.zshrc'

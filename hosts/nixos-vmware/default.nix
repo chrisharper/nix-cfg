@@ -14,7 +14,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "vmware-dev"; # Define your hostname.
+  networking.hostName = "nixos-vmware"; # Define your hostname.
 
   services.avahi = {
       enable = true;

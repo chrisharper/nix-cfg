@@ -40,6 +40,9 @@
 			"*" = { 
 				extraOptions.IdentityAgent = "/Users/charper/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh";
 			};
+			"nixos-vmware.local" = {
+				forwardAgent= true;
+			};
 		};
 	};
 }
