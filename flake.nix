@@ -3,54 +3,66 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/release-23.05";
+
     home-manager = {
       url = github:nix-community/home-manager/release-23.05;
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    darwin = {
+    nix-darwin = {
       url = "github:LnL7/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = inputs@{nix-darwin, nixpkgs, home-manager,  ... }:
+  outputs = {nixpkgs, nix-darwin, home-manager,  ... }@inputs:
   let 
-    ssh-key = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBH3DrOvocMoywlG0SZYhrkv7E9dx3uZSRWTlg0rDOXfCyU+3Ynue+ufGhXjU1+vI3axnEtWiompq75U2XhwRdmQ= ";
-  in {
-    darwinConfigurations = {
-      darwin-m1air = nix-darwin.lib.darwinSystem {
-        specialArgs = { inherit ssh-key; };
-        system = "aarch64-darwin";
-        modules = [
-          ./hosts/darwin-m1air
-          home-manager.darwinModules.home-manager
-          {
-            home-manager = {
-              extraSpecialArgs = { inherit ssh-key; };
-              useUserPackages = true;
-              useGlobalPkgs = true;
-              users.charper = import ./hosts/darwin-m1air/home.nix;
-            };
+    specialArgs = {
+      ssh-key = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBH3DrOvocMoywlG0SZYhrkv7E9dx3uZSRWTlg0rDOXfCyU+3Ynue+ufGhXjU1+vI3axnEtWiompq75U2XhwRdmQ= ";
+    };
+    mksystemConfig = 
+    { system ,
+      modules,
+      hm-modules,
+      isDarwin ? nixpkgs.lib.hasSuffix "-darwin" system ,
+      ...
+    }:(
+      if isDarwin
+      then nix-darwin.lib.darwinSystem
+      else nixpkgs.lib.nixosSystem
+    ){
+      inherit specialArgs;
+      modules = 
+        modules
+        ++ [
+          ( 
+            if isDarwin
+            then home-manager.darwinModules.home-manager
+            else home-manager.nixosModules.home-manager
+          ){
+
+             home-manager.extraSpecialArgs = specialArgs;
+             home-manager.useUserPackages = true;
+             home-manager.useGlobalPkgs = true;
+             home-manager.users.charper = {
+               imports = hm-modules;
+             };
+
           }
         ];
+    };
+  in {
+    darwinConfigurations = {
+      darwin-m1air = mksystemConfig {
+        system = "aarch64-darwin";
+        modules = [./hosts/darwin-m1air];
+        hm-modules = [./hosts/darwin-m1air/home.nix];
       };
     };
     nixosConfigurations = {
-      nixos-vmware = nixpkgs.lib.nixosSystem {
-      system = "aarch64-linux";
-      specialArgs = { inherit ssh-key; };
-        modules = [
-          ./hosts/nixos-vmware
-          home-manager.nixosModules.home-manager
-          {
-            home-manager = {
-              extraSpecialArgs = { inherit ssh-key; };
-              useUserPackages = true;
-              useGlobalPkgs = true;
-              users.charper = import ./hosts/nixos-vmware/home.nix;
-            };
-          }
-        ];
+      nixos-vmware = mksystemConfig {
+        system = "aarch64-linux";
+        modules = [./hosts/nixos-vmware];
+        hm-modules = [./hosts/nixos-vmware/home.nix];
       };
     };
   };

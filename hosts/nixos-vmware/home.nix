@@ -1,6 +1,7 @@
-{ config, pkgs, ssh-key, ... }:
+{ config, pkgs, ssh-key,  ... }:
 
 {
+  
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
   home.username = "charper";
@@ -20,6 +21,7 @@
   programs.home-manager.enable = true;
   home.packages = [
     pkgs.ripgrep #nvim telescope
+    pkgs.nodePackages.bash-language-server #neovim bash LSP
   ];
 
   programs.bash.enable = true;
@@ -31,12 +33,21 @@
     defaultEditor = true;
     viAlias = true;
     vimAlias = true;
-    plugins = [
-      pkgs.vimPlugins.gruvbox-community
-      pkgs.vimPlugins.gitsigns-nvim
-      pkgs.vimPlugins.nvim-treesitter.withAllGrammars
-      pkgs.vimPlugins.telescope-nvim
-      pkgs.vimPlugins.telescope-fzf-native-nvim
+    plugins = with pkgs.vimPlugins; [
+      gruvbox-community
+      gitsigns-nvim
+      nvim-treesitter.withAllGrammars
+      telescope-nvim
+      telescope-fzf-native-nvim
+
+
+      nvim-lspconfig
+      cmp-nvim-lsp
+      cmp-buffer
+      cmp-path
+      cmp-cmdline
+      nvim-cmp
+      luasnip
 
     ];
     extraLuaConfig = ''
@@ -68,11 +79,26 @@
       vim.g.mapleader = ' '
 
       vim.cmd 'colorscheme gruvbox'
-      local builtin = require('telescope.builtin')
+
+      local builtin =  require('telescope.builtin')
       vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
       vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
       vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
       vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
+
+
+      local cmp = require('cmp')
+
+
+      cmp.setup({
+        sources = {
+          {name = 'path'},
+          {name = 'nvim_lsp'},
+          {name = 'buffer', keyword_length = 3},
+        },
+      })
+
+      require'lspconfig'.bashls.setup{}
 
     '';
   };

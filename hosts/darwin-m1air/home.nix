@@ -1,4 +1,4 @@
-{ config, pkgs, ssh-key, ... }:
+{ config, pkgs, pkgs-unstable, ssh-key, ... }:
 
 {
 	home.stateVersion = "23.05";

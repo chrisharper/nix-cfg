@@ -13,6 +13,7 @@
   system.defaults.dock.minimize-to-application=true;
   system.defaults.dock.static-only=true;
   system.defaults.NSGlobalDomain.AppleInterfaceStyle="Dark";
+  system.defaults.spaces.spans-displays=true;
 
   users.users.charper.home="/Users/charper";
 
