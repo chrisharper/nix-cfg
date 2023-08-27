@@ -4,6 +4,7 @@
   networking.hostName="m1air";
   homebrew.enable=true;
   homebrew.casks = [
+    "rectangle"
     "vmware-fusion"
     "secretive"
     "kitty"
