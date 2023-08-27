@@ -8,10 +8,16 @@
 	home.packages = [
 	];
 
-	programs.zsh.enable = true;
-        home.sessionVariables={
+	programs.zsh = {
+		enable = true;
+		initExtra = ''
+			eval "$(/opt/homebrew/bin/brew shellenv)"
+			'';
+	};
+
+	home.sessionVariables={
 		SSH_AUTH_SOCK = "/Users/charper/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh";
-        };
+	};
 
 	programs.git = {
 		enable = true;
