@@ -40,7 +40,7 @@
       system = "aarch64-linux";
       specialArgs = { inherit ssh-key; };
         modules = [
-          ./hosts/nixos-vmware-dev
+          ./hosts/nixos-vmware
           home-manager.nixosModules.home-manager
           {
             home-manager = {

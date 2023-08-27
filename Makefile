@@ -57,19 +57,21 @@ vm/bootstrap:
 vm/copy:
 	rsync -av -e 'ssh $(SSH_OPTIONS) -p$(NIXPORT)' \
 		--rsync-path="sudo rsync" \
-		$(MAKEFILE_DIR)/ $(NIXUSER)@$(NIXADDR):/nixos-vm
+		$(MAKEFILE_DIR)/ $(NIXUSER)@$(NIXADDR):/nix-cfg
 
 # run the nixos-rebuild switch command. This does NOT copy files so you
 # have to run vm/copy before.
 vm/switch:
 	ssh $(SSH_OPTIONS) -p$(NIXPORT) $(NIXUSER)@$(NIXADDR) " \
-		sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nix-shell -p git --run 'nixos-rebuild switch --flake \/nixos-vm\#dev ' \
+		sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nix-shell -p git --run 'nixos-rebuild switch --flake \/nix-cfg\#nixos-vmware ' \
 	"
-
-osx/bootstrap:
+#Installs Homebrew(pulls in xcode-tools) + Nix and setups build env
+osx/bootstrap0:
 	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	curl -L https://nixos.org/nix/install | sh
 	nix build .#darwinConfigurations.darwin-m1air.system --extra-experimental-features nix-command --extra-experimental-features flakes
 	$(MAKE) osx/build
 
+#run build for 
 osx/build:
 	./result/sw/bin/darwin-rebuild switch --flake .#darwin-m1air
