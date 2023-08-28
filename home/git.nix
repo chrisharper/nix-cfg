@@ -1,4 +1,4 @@
-{config, pkgs, ssh-key, ...}:
+{ ssh-key, ...}:
 
 {
   programs.git = {

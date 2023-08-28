@@ -1,4 +1,4 @@
-{config,pkgs,...}:
+{pkgs,...}:
 
 let 
   #pull from default(2.x) branch instead of main(1.x) 28/08/2023

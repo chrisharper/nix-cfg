@@ -2,10 +2,10 @@
   description = "NixOS vm DEV";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/release-23.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     home-manager = {
-      url = github:nix-community/home-manager/release-23.05;
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-darwin = {
@@ -14,7 +14,7 @@
     };
   };
 
-  outputs = {nixpkgs, nix-darwin, home-manager,  ... }@inputs:
+  outputs = {nixpkgs, nix-darwin, home-manager,  ... }:
   let 
     specialArgs = {
       ssh-key = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBH3DrOvocMoywlG0SZYhrkv7E9dx3uZSRWTlg0rDOXfCyU+3Ynue+ufGhXjU1+vI3axnEtWiompq75U2XhwRdmQ= ";
