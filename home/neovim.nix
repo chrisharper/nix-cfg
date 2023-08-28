@@ -1,5 +1,17 @@
 {config,pkgs,...}:
 
+let 
+  #pull from default(2.x) branch instead of main(1.x) 28/08/2023
+  custom-lsp-zero-nvim = pkgs.vimUtils.buildVimPluginFrom2Nix {
+    name = "custom-lsp-zero-nvim";
+    src = pkgs.fetchFromGitHub {
+      owner = "VonHeikemen";
+      repo = "lsp-zero.nvim";
+      rev = "f084f4a6a716f55bf9c4026e73027bb24a0325a3";
+      sha256 = "hBDkb4KYkuhI7Vv5UUtdLUPechCt40UxUSRr3eZqHG8=";
+    };
+  };
+in
 {
 
     programs.neovim = {
@@ -7,7 +19,7 @@
     defaultEditor = true;
     viAlias = true;
     vimAlias = true;
-    plugins = with pkgs.vimPlugins; [
+    plugins = with pkgs.vimPlugins; [ 
       gruvbox-community
       gitsigns-nvim
       nvim-treesitter.withAllGrammars
@@ -22,6 +34,8 @@
       cmp-cmdline
       nvim-cmp
       luasnip
+
+      custom-lsp-zero-nvim
 
     ];
     extraLuaConfig = ''
@@ -61,19 +75,20 @@
       vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
 
 
-      local cmp = require('cmp')
+      local lsp = require('lsp-zero').preset({})
 
+      lsp.on_attach(function(client, bufnr)
+        -- see :help lsp-zero-keybindings
+        -- to learn the available actions
+        lsp.default_keymaps({buffer = bufnr})
+      end)
 
-      cmp.setup({
-        sources = {
-          {name = 'path'},
-          {name = 'nvim_lsp'},
-          {name = 'buffer', keyword_length = 3},
-        },
-      })
+      -- When you don't have mason.nvim installed
+      -- You'll need to list the servers installed in your system
+      lsp.setup_servers({'bashls'})
+      require('lspconfig').lua_ls.setup(lsp.nvim_lua_ls())
 
-      require'lspconfig'.bashls.setup{}
-
+      lsp.setup()
     '';
   };
 
