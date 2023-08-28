@@ -1,7 +1,8 @@
 {config, pkgs, ...}:
 {
   home.packages = [
-    pkgs.ripgrep #nvim telescope
+    pkgs.ripgrep #neovim telescope
     pkgs.nodePackages.bash-language-server #neovim bash LSP
+    pkgs.nil # neovim nix LSP
   ];
 }
