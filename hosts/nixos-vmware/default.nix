@@ -30,9 +30,12 @@
   };
   time.timeZone = "Europe/London";
 
+  programs.zsh.enable = true;
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
    users.users.charper = {
      isNormalUser = true;
+     shell = pkgs.zsh;
      home = "/home/charper";
      extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
      openssh.authorizedKeys.keys = [

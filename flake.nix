@@ -47,6 +47,7 @@
              home-manager.users.charper = {
                imports = hm-modules
                ++[
+                 ./home/shell.nix
                  ./home/packages.nix
                  ./home/git.nix
                  ./home/tmux.nix

@@ -1,4 +1,4 @@
-{configs,pkgs,...}:
+{config, pkgs, ...}:
 {
   home.packages = [
     pkgs.ripgrep #nvim telescope
