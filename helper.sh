@@ -1,4 +1,9 @@
 #!/bin/sh
+#
+#Boot VM with SATA disk.
+#sudo su
+#passwd root -> set to root
+#ifconfig 
 
 function vm_bootstrap {
 
@@ -6,6 +11,7 @@ function vm_bootstrap {
  		echo 'requires IP of VM as arg'
 		exit 1
 	fi
+  echo "Bootstrap NixOS"
 	ssh root@$1 " \
 		parted /dev/sda -- mklabel gpt; \
 		parted /dev/sda -- mkpart primary 512MB -8GB; \
@@ -22,7 +28,6 @@ function vm_bootstrap {
 		mount /dev/disk/by-label/boot /mnt/boot; \
 		nixos-generate-config --root /mnt; \
 		sed --in-place '/system\.stateVersion = .*/a \
-		nix.package = pkgs.nixUnstable;\n \
 		nix.extraOptions = \"experimental-features = nix-command flakes\";\n \
 		services.openssh.enable = true;\n \
 		services.openssh.settings.PasswordAuthentication = true;\n \
@@ -31,12 +36,19 @@ function vm_bootstrap {
 		' /mnt/etc/nixos/configuration.nix; \
 		nixos-install --no-root-passwd && reboot; \
 		"
-        echo "Sleeping for VM reboot"
-        sleep 15
-	rsync -av $PWD/ root@$1:/nix-cfg
-	ssh root@$1 " \
-		sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nix-shell -p git --run 'nixos-rebuild switch --flake \/nix-cfg\#nixos-vmware'; \ 
-		sudo reboot; "
+    echo "Sleeping for VM reboot"
+    sleep 15
+
+    echo "Copying config"
+	  rsync -av -e 'ssh -o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' $PWD/ root@$1:/nix-cfg
+
+    echo "rebuilding flake"
+	  ssh -o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$1 " \
+        sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nix-shell -p git --run 'nixos-rebuild switch --flake /nix-cfg/#nixos-vmware'; \
+        sudo reboot; "
+
+    echo "Setup Complete"
+    exit 0
 
 
 }
