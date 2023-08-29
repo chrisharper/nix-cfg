@@ -14,6 +14,8 @@ function vm_bootstrap {
   ssh_opts='-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
 
   echo "Bootstrap NixOS"
+  ssh $ssh_opts root@$1 "mkdir /root/nix-cfg"
+  scp -r $ssh_opts ./ root@$1:/root/nix-cfg
 	ssh $ssh_opts root@$1 " \
 		parted /dev/nvme0n1 -- mklabel gpt; \
 		parted /dev/nvme0n1 -- mkpart primary 512MB -8GB; \
@@ -29,19 +31,10 @@ function vm_bootstrap {
 		mkdir -p /mnt/boot; \
 		mount /dev/disk/by-label/boot /mnt/boot; \
 		nixos-generate-config --root /mnt; \
-    nix-shell -p git --command 'git clone https://github.com/chrisharper/nix-cfg '; \
-	  nix-shell -p git --command 'nixos-install --no-root-passwd --flake nix-cfg/#nixos-vmware  && reboot'; \
+	  nix-shell -p git --command 'nixos-install --no-root-passwd --flake nix-cfg/#nixos-vmware'; \
+    cp -rf nix-cfg /mnt/home/charper/nix-cfg; \
+    nixos-enter -c 'chown -R charper /home/charper/nix-cfg; rm -rf /etc/nixos; ln -s /home/charper/nix-cfg /etc/nixos ;' && reboot; \
 		"
-
-  echo "Setup Complete"
-  echo "Sleeping for reboot"
-  sleep 15
-  echo "Post install configuration"
-  ssh $1 " \
-    git clone http://github.com/chrisharper/nix-cfg /home/charper/nix-cfg; \
-    sudo rm -rf /etc/nixos ; \
-    sudo ln -s /home/charper/nix-cfg /etc/nixos ; \
-    "
   echo "Complete"
   exit 0
 
