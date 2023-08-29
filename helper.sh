@@ -1,9 +1,4 @@
 #!/bin/sh
-#
-#Boot VM with SATA disk.
-#sudo su
-#passwd root -> set to root
-#ifconfig 
 
 function vm_bootstrap {
 
@@ -14,8 +9,17 @@ function vm_bootstrap {
   ssh_opts='-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
 
   echo "Bootstrap NixOS"
+
+  # newer versions of rsync can combine these 2 commands to sync and create dirs
+  # but requires installing/updating rsync, ssh+scp works in this simple case
+
   ssh $ssh_opts root@$1 "mkdir /root/nix-cfg"
   scp -r $ssh_opts ./ root@$1:/root/nix-cfg
+
+  # SSH in and create disks with labels
+  # create system using our flake
+  # copy flake into newly created users home and relink /etc/nixos 
+
 	ssh $ssh_opts root@$1 " \
 		parted /dev/nvme0n1 -- mklabel gpt; \
 		parted /dev/nvme0n1 -- mkpart primary 512MB -8GB; \
@@ -41,12 +45,16 @@ function vm_bootstrap {
 
 }
 
+# Fetch homebrew, nix and then build using flake
+
 function osx_bootstrap {
 	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" 
 	curl -L https://nixos.org/nix/install | sh
 	nix build .#darwinConfigurations.darwin-m1air.system --extra-experimental-features nix-command --extra-experimental-features flakes 
 	osx-build
 }
+
+# Build using flake
 
 function osx_build {
 	./result/sw/bin/darwin-rebuild switch --flake .#darwin-m1air 
