@@ -40,11 +40,11 @@ function vm_bootstrap {
     sleep 15
 
     echo "Copying config"
-	  rsync -av -e 'ssh -o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' $PWD/ root@$1:/nix-cfg
+	  rsync -av --delete -e 'ssh -o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' $PWD/ root@$1:/etc/nixos
 
     echo "rebuilding flake"
 	  ssh -o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$1 " \
-        sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nix-shell -p git --run 'nixos-rebuild switch --flake /nix-cfg/#nixos-vmware'; \
+        sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nix-shell -p git --run 'nixos-rebuild switch --flake /etc/nixos#nixos-vmware'; \
         sudo reboot; "
 
     echo "Setup Complete"
