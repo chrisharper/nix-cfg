@@ -11,44 +11,39 @@ function vm_bootstrap {
  		echo 'requires IP of VM as arg'
 		exit 1
 	fi
+  ssh_opts='-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
+
   echo "Bootstrap NixOS"
-	ssh root@$1 " \
-		parted /dev/sda -- mklabel gpt; \
-		parted /dev/sda -- mkpart primary 512MB -8GB; \
-		parted /dev/sda -- mkpart primary linux-swap -8GB 100\%; \
-		parted /dev/sda -- mkpart ESP fat32 1MB 512MB; \
-		parted /dev/sda -- set 3 esp on; \
+	ssh $ssh_opts root@$1 " \
+		parted /dev/nvme0n1 -- mklabel gpt; \
+		parted /dev/nvme0n1 -- mkpart primary 512MB -8GB; \
+		parted /dev/nvme0n1 -- mkpart primary linux-swap -8GB 100\%; \
+		parted /dev/nvme0n1 -- mkpart ESP fat32 1MB 512MB; \
+		parted /dev/nvme0n1 -- set 3 esp on; \
 		sleep 1; \
-		mkfs.ext4 -L nixos /dev/sda1; \
-		mkswap -L swap /dev/sda2; \
-		mkfs.fat -F 32 -n boot /dev/sda3; \
+		mkfs.ext4 -L nixos /dev/nvme0n1p1; \
+		mkswap -L swap /dev/nvme0n1p2; \
+		mkfs.fat -F 32 -n boot /dev/nvme0n1p3; \
 		sleep 1; \
 		mount /dev/disk/by-label/nixos /mnt; \
 		mkdir -p /mnt/boot; \
 		mount /dev/disk/by-label/boot /mnt/boot; \
 		nixos-generate-config --root /mnt; \
-		sed --in-place '/system\.stateVersion = .*/a \
-		nix.extraOptions = \"experimental-features = nix-command flakes\";\n \
-		services.openssh.enable = true;\n \
-		services.openssh.settings.PasswordAuthentication = true;\n \
-		services.openssh.settings.PermitRootLogin = \"yes\";\n \
-		users.users.root.initialPassword = \"root\";\n \
-		' /mnt/etc/nixos/configuration.nix; \
-		nixos-install --no-root-passwd && reboot; \
+    nix-shell -p git --command 'git clone https://github.com/chrisharper/nix-cfg '; \
+	  nix-shell -p git --command 'nixos-install --no-root-passwd --flake nix-cfg/#nixos-vmware  && reboot'; \
 		"
-    echo "Sleeping for VM reboot"
-    sleep 15
 
-    echo "Copying config"
-	  rsync -av --delete -e 'ssh -o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' $PWD/ root@$1:/etc/nixos
-
-    echo "rebuilding flake"
-	  ssh -o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$1 " \
-        sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nix-shell -p git --run 'nixos-rebuild switch --flake /etc/nixos#nixos-vmware'; \
-        sudo reboot; "
-
-    echo "Setup Complete"
-    exit 0
+  echo "Setup Complete"
+  echo "Sleeping for reboot"
+  sleep 15
+  echo "Post install configuration"
+  ssh $1 " \
+    git clone http://github.com/chrisharper/nix-cfg /home/charper/nix-cfg; \
+    sudo rm -rf /etc/nixos ; \
+    sudo ln -s /home/charper/nix-cfg /etc/nixos ; \
+    "
+  echo "Complete"
+  exit 0
 
 
 }
