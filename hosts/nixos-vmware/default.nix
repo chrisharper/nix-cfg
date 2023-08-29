@@ -46,8 +46,7 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
    environment.systemPackages = with pkgs; [
-     vim
-     git
+     kitty.terminfo #seed kitty terminfo to avoid manual copying later
    ];
 
   # List services that you want to enable:
