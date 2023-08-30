@@ -9,8 +9,8 @@
   programs.zsh = {
     enable = true;
     initExtra = ''
-      			eval "$(/opt/homebrew/bin/brew shellenv)"
-      			'';
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+    '';
   };
 
   home.sessionVariables = {
