@@ -1,7 +1,7 @@
-{  username, ... }:
+{  username, system-name ... }:
 
 {
-  networking.hostName="m1air";
+  networking.hostName= system-name";
   homebrew.enable=true;
   homebrew.casks = [
     "rectangle"

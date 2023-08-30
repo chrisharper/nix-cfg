@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running `nixos-help`).
 
-{ pkgs, ssh-key, username,   ... }:
+{ pkgs, ssh-key, username, system-name,   ... }:
 
 {
   imports =
@@ -14,7 +14,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "nixos-vmware"; # Define your hostname.
+  networking.hostName = system-name;
 
   services.avahi = {
       enable = true;

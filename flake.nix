@@ -28,7 +28,7 @@
       isDarwin ? nixpkgs.lib.hasSuffix "-darwin" system ,
       ...
     }:let 
-        extraArgs = {inherit ssh-key username;};
+        extraArgs = {inherit ssh-key username system-name;};
       in
     (if isDarwin
       then nix-darwin.lib.darwinSystem
