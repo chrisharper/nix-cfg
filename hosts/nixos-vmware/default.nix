@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running `nixos-help`).
 
-{ pkgs, ssh-key, ... }:
+{ pkgs, ssh-key, username,   ... }:
 
 {
   imports =
@@ -33,10 +33,10 @@
   programs.zsh.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-   users.users.charper = {
+   users.users.${username} = {
      isNormalUser = true;
      shell = pkgs.zsh;
-     home = "/home/charper";
+     home = "/home/${username}";
      extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
      openssh.authorizedKeys.keys = [
        ssh-key

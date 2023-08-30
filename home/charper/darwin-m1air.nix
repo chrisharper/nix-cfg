@@ -1,4 +1,4 @@
-{ ... }:
+{ username, ... }:
 
 {
 	home.stateVersion = "23.05";
@@ -14,7 +14,7 @@
 	};
 
 	home.sessionVariables={
-		SSH_AUTH_SOCK = "/Users/charper/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh";
+		SSH_AUTH_SOCK = "/Users/${username}/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh";
 	};
 
 	programs.kitty = {
@@ -26,7 +26,7 @@
 		enable=true;
 		matchBlocks = {
 			"*" = { 
-				extraOptions.IdentityAgent = "/Users/charper/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh";
+				extraOptions.IdentityAgent = "/Users/${username}/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh";
 			};
 			"nixos-vmware.local" = {
 				forwardAgent= true;

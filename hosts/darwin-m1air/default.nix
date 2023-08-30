@@ -1,4 +1,4 @@
-{  ... }:
+{  username, ... }:
 
 {
   networking.hostName="m1air";
@@ -16,7 +16,7 @@
   system.defaults.NSGlobalDomain.AppleInterfaceStyle="Dark";
   system.defaults.spaces.spans-displays=true;
 
-  users.users.charper.home="/Users/charper";
+  users.users.${username}.home="/Users/${username}";
 
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
