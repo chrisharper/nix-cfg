@@ -1,13 +1,13 @@
-{... }:
+{ ... }:
 {
-  programs.tmux = { 
-      enable = true;
-      clock24 = true;
-      keyMode = "vi";
-      mouse = false;
-      terminal = "screen-256color";
-      shortcut = "a";
-      extraConfig =''
+  programs.tmux = {
+    enable = true;
+    clock24 = true;
+    keyMode = "vi";
+    mouse = false;
+    terminal = "screen-256color";
+    shortcut = "a";
+    extraConfig = ''
         
         set-option -sa terminal-features ',xterm-kitty:RGB'
         bind -r -N 'Select panel to right' h select-pane -L
@@ -35,5 +35,5 @@
         bind '"' split-window -c '#{pane_current_path}'
         bind % split-window -h -c '#{pane_current_path}'
       '';
-    };
+  };
 }

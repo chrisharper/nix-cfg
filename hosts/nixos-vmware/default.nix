@@ -2,11 +2,12 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running `nixos-help`).
 
-{ pkgs, ssh-key, username, system-name,   ... }:
+{ pkgs, ssh-key, username, system-name, ... }:
 
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [
+      # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
 
@@ -17,37 +18,37 @@
   networking.hostName = system-name;
 
   services.avahi = {
+    enable = true;
+    nssmdns = true;
+    publish = {
       enable = true;
-      nssmdns = true;
-      publish = {
-        enable = true;
-        addresses = true;
-        domain = true;
-        hinfo = true;
-        userServices = true;
-        workstation = true;
-      };
+      addresses = true;
+      domain = true;
+      hinfo = true;
+      userServices = true;
+      workstation = true;
+    };
   };
   time.timeZone = "Europe/London";
 
   programs.zsh.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-   users.users.${username} = {
-     isNormalUser = true;
-     shell = pkgs.zsh;
-     home = "/home/${username}";
-     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-     openssh.authorizedKeys.keys = [
-       ssh-key
-     ];
-   };
+  users.users.${username} = {
+    isNormalUser = true;
+    shell = pkgs.zsh;
+    home = "/home/${username}";
+    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    openssh.authorizedKeys.keys = [
+      ssh-key
+    ];
+  };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-   environment.systemPackages = with pkgs; [
-     kitty.terminfo #seed kitty terminfo to avoid manual copying later
-   ];
+  environment.systemPackages = with pkgs; [
+    kitty.terminfo #seed kitty terminfo to avoid manual copying later
+  ];
 
   # List services that you want to enable:
 
@@ -75,7 +76,7 @@
   system.stateVersion = "23.05"; # Did you read the comment?
 
   nix.extraOptions = "experimental-features = nix-command flakes";
- 
+
 
 }
 

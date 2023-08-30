@@ -17,63 +17,64 @@
     };
   };
 
-  outputs = {nixpkgs, nix-darwin, home-manager,  ... }:
-  let 
+  outputs = { nixpkgs, nix-darwin, home-manager, ... }:
+    let
 
-    ssh-key = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBH3DrOvocMoywlG0SZYhrkv7E9dx3uZSRWTlg0rDOXfCyU+3Ynue+ufGhXjU1+vI3axnEtWiompq75U2XhwRdmQ= ";
-    username = "charper";
+      ssh-key = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBH3DrOvocMoywlG0SZYhrkv7E9dx3uZSRWTlg0rDOXfCyU+3Ynue+ufGhXjU1+vI3axnEtWiompq75U2XhwRdmQ= ";
+      username = "charper";
 
-    mksystemConfig = 
-    system-name: { system ,
-      isDarwin ? nixpkgs.lib.hasSuffix "-darwin" system ,
-      ...
-    }:let 
-        extraArgs = {inherit ssh-key username system-name;};
-      in
-    (if isDarwin
-      then nix-darwin.lib.darwinSystem
-      else nixpkgs.lib.nixosSystem
-    ){
-      specialArgs = extraArgs;
-      inherit system;
-      modules = 
-        [./hosts/${system-name}]
-        ++ [
+      nixos-ptr = {
+        home = home-manager.nixosModules.home-manager;
+        system = nixpkgs.lib.nixosSystem;
+      };
 
-          ( 
-            if isDarwin
-            then home-manager.darwinModules.home-manager
-            else home-manager.nixosModules.home-manager
-          ){
+      darwin-ptr = {
+        home = home-manager.darwinModules.home-manager;
+        system = nix-darwin.lib.darwinSystem;
+      };
 
-             home-manager.extraSpecialArgs = extraArgs;
-             home-manager.useUserPackages = true;
-             home-manager.useGlobalPkgs = true;
-             home-manager.users.${username} = {
-               imports = 
-               [
-                 ./home/${username}/${system-name}.nix
-                 ./home/${username}/shell.nix
-                 ./home/${username}/packages.nix
-                 ./home/${username}/git.nix
-                 ./home/${username}/tmux.nix
-                 ./home/${username}/neovim.nix
-               ];
-             };
-
-          }
-        ];
-    };
-  in {
-    darwinConfigurations = {
-      darwin-m1air = mksystemConfig "darwin-m1air" {
-        system = "aarch64-darwin";
+      mksystemConfig =
+        { system-name, ptr, ... }:
+        let
+          extraArgs = { inherit ssh-key username system-name; };
+        in
+        ptr.system {
+          specialArgs = extraArgs;
+          modules =
+            [
+              ./hosts/${system-name}
+              ptr.home
+              {
+                home-manager.extraSpecialArgs = extraArgs;
+                home-manager.useUserPackages = true;
+                home-manager.useGlobalPkgs = true;
+                home-manager.users.${username} = {
+                  imports =
+                    [
+                      ./home/${username}/${system-name}.nix
+                      ./home/${username}/shell.nix
+                      ./home/${username}/packages.nix
+                      ./home/${username}/git.nix
+                      ./home/${username}/tmux.nix
+                      ./home/${username}/neovim.nix
+                    ];
+                };
+              }
+            ];
+        };
+    in
+    {
+      darwinConfigurations = {
+        darwin-m1air = mksystemConfig {
+          system-name = "darwin-m1air";
+          ptr = darwin-ptr;
+        };
+      };
+      nixosConfigurations = {
+        nixos-vmware = mksystemConfig {
+          system-name = "nixos-vmware";
+          ptr = nixos-ptr;
+        };
       };
     };
-    nixosConfigurations = {
-      nixos-vmware = mksystemConfig "nixos-vmware" {
-        system = "aarch64-linux";
-      };
-    };
-  };
 }

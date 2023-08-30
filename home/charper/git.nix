@@ -1,4 +1,4 @@
-{ ssh-key, ...}:
+{ ssh-key, ... }:
 
 {
   programs.git = {

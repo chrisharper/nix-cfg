@@ -1,6 +1,6 @@
-{pkgs,...}:
+{ pkgs, ... }:
 
-let 
+let
   #pull from default(2.x) branch instead of main(1.x) 28/08/2023
   custom-lsp-zero-nvim = pkgs.vimUtils.buildVimPluginFrom2Nix {
     name = "custom-lsp-zero-nvim";
@@ -14,12 +14,12 @@ let
 in
 {
 
-    programs.neovim = {
+  programs.neovim = {
     enable = true;
     defaultEditor = true;
     viAlias = true;
     vimAlias = true;
-    plugins = with pkgs.vimPlugins; [ 
+    plugins = with pkgs.vimPlugins; [
       gruvbox-community
       gitsigns-nvim
       nvim-treesitter.withAllGrammars
