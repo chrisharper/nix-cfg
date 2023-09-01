@@ -6,6 +6,8 @@ function vm_bootstrap {
  		echo 'requires IP of VM as arg'
 		exit 1
 	fi
+  vmname="${1:-nixos-vmware}"
+
   ssh_opts='-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
 
   echo "Bootstrap NixOS"
@@ -35,7 +37,7 @@ function vm_bootstrap {
 		mkdir -p /mnt/boot; \
 		mount /dev/disk/by-label/boot /mnt/boot; \
 		nixos-generate-config --root /mnt; \
-	  nix-shell -p git --command 'nixos-install --no-root-passwd --flake nix-cfg/#nixos-vmware'; \
+	  nix-shell -p git --command 'nixos-install --no-root-passwd --flake nix-cfg/#${vmname}'; \
     cp -rf nix-cfg /mnt/home/charper/nix-cfg; \
     nixos-enter -c 'chown -R charper /home/charper/nix-cfg; rm -rf /etc/nixos; ln -s /home/charper/nix-cfg /etc/nixos ;' && reboot; \
 		"
@@ -67,7 +69,7 @@ then
   "$@"
 else
   # Show a helpful error
-  echo "vm_bootstrap <ip>: bootstrap a vm at given IP  "
+  echo "vm_bootstrap <ip> <vmname>: bootstrap default 'nixos-vmware' or optional vmname at given IP  "
   echo "osx_bootstrap: bootstrap an OSX system with homebrew/nix and run flake"
   echo "osx_build: rebuild the OSX flake"
   exit 1
