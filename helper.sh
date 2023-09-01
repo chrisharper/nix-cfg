@@ -6,7 +6,7 @@ function vm_bootstrap {
  		echo 'requires IP of VM as arg'
 		exit 1
 	fi
-  vmname="${1:-nixos-vmware}"
+  vmname="${2:-nixos-vmware}"
 
   ssh_opts='-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
 
