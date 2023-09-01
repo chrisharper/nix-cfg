@@ -34,12 +34,13 @@
       };
 
       mksystemConfig =
-        { system-name, ptr, ... }:
+        { system, system-name, ptr, ... }:
         let
           extraArgs = { inherit ssh-key username system-name; };
         in
         ptr.system {
           specialArgs = extraArgs;
+          inherit system;
           modules =
             [
               ./hosts/${system-name}
@@ -66,12 +67,14 @@
     {
       darwinConfigurations = {
         darwin-m1air = mksystemConfig {
+          system = "aarch64-darwin";
           system-name = "darwin-m1air";
           ptr = darwin-ptr;
         };
       };
       nixosConfigurations = {
         nixos-vmware = mksystemConfig {
+          system = "aarch64-linux";
           system-name = "nixos-vmware";
           ptr = nixos-ptr;
         };
