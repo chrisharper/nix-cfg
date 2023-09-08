@@ -14,6 +14,7 @@
   system.defaults.dock.autohide=true;
   system.defaults.dock.minimize-to-application=true;
   system.defaults.dock.static-only=true;
+  system.defaults.dock.show-recents=false;
   system.defaults.NSGlobalDomain.AppleInterfaceStyle="Dark";
   system.defaults.spaces.spans-displays=true;
 
