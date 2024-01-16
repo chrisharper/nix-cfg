@@ -15,9 +15,14 @@
       url = "github:LnL7/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
+
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { nixpkgs, nix-darwin, home-manager, ... }:
+  outputs = { nixpkgs, nix-darwin, home-manager, fenix, ... }:
     let
 
       ssh-key = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBH3DrOvocMoywlG0SZYhrkv7E9dx3uZSRWTlg0rDOXfCyU+3Ynue+ufGhXjU1+vI3axnEtWiompq75U2XhwRdmQ= ";
@@ -46,6 +51,7 @@
               ./hosts/${system-name}
               ptr.home
               {
+                nixpkgs.overlays = [ fenix.overlays.default ] ;
                 home-manager.extraSpecialArgs = extraArgs;
                 home-manager.useUserPackages = true;
                 home-manager.useGlobalPkgs = true;
