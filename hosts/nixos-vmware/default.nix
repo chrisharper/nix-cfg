@@ -76,6 +76,11 @@
   system.stateVersion = "23.05"; # Did you read the comment?
 
   nix.extraOptions = "experimental-features = nix-command flakes";
+  nix.gc = {
+    automatic = true;
+    randomizedDelaySec = "14m";
+    options = "--delete-older-than 10d";
+  };
 
 
 }
