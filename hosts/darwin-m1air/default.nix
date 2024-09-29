@@ -5,7 +5,6 @@
   homebrew.enable=true;
   homebrew.casks = [
     "steam"
-    "rectangle"
     "vmware-fusion"
     "secretive"
     "kitty"
